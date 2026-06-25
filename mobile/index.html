@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portfolio — Louis</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Iceland&family=Imperial+Script&family=Imprima&family=Roboto&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --bg: #1e1e1e;
+        --black: #000;
+        --white: #fff;
+        --nav-h: 60px;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--white);
+        font-family: "Roboto", sans-serif;
+        overflow-x: hidden;
+        max-width: 430px;
+        margin: 0 auto;
+      }
+
+      /* ── NAV ── */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 50%;
+        right: auto;
+        width: 100%;
+        max-width: 430px;
+        transform: translateX(-50%);
+        height: var(--nav-h);
+        background: var(--black);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 18px;
+        z-index: 100;
+      }
+
+      .nav-logo {
+        font-family: "Iceland", sans-serif;
+        font-size: 22px;
+        color: var(--white);
+        text-decoration: none;
+      }
+
+      /* Hamburger */
+      .hamburger {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        cursor: pointer;
+        padding: 4px;
+        background: none;
+        border: none;
+      }
+      .hamburger span {
+        display: block;
+        width: 24px;
+        height: 2px;
+        background: var(--white);
+        border-radius: 2px;
+        transition: all 0.3s;
+      }
+      .hamburger.open span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+      }
+      .hamburger.open span:nth-child(2) {
+        opacity: 0;
+      }
+      .hamburger.open span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+      }
+
+      /* Drawer */
+      .nav-drawer {
+        position: fixed;
+        top: var(--nav-h);
+        left: 50%;
+        max-width: 430px;
+        width: 100%;
+        transform: translateX(-50%) translateY(-110%);
+        background: var(--black);
+        display: flex;
+        flex-direction: column;
+        padding: 20px 18px 28px;
+        gap: 20px;
+        z-index: 99;
+        transition: transform 0.3s ease;
+      }
+      .nav-drawer.open {
+        transform: translateX(-50%) translateY(0);
+      }
+      .nav-drawer a {
+        font-family: "Iceland", sans-serif;
+        font-size: 28px;
+        color: var(--white);
+        text-decoration: none;
+      }
+
+      .nav-avatar {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: #555;
+      }
+
+      /* ── PAGES ── */
+      section {
+        min-height: 100vh;
+        padding-top: var(--nav-h);
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* background </> watermark */
+      section::before {
+        content: "</>";
+        position: absolute;
+        font-family: "Roboto", sans-serif;
+        font-size: 220px;
+        color: var(--black);
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        user-select: none;
+        line-height: 1;
+        white-space: nowrap;
+      }
+
+      /* ── ACCUEIL ── */
+      #accueil {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: calc(var(--nav-h) + 40px) 24px 60px;
+        min-height: 100vh;
+      }
+
+      #accueil h1 {
+        font-family: "Imperial Script", cursive;
+        font-size: 72px;
+        line-height: 1;
+        margin-bottom: 28px;
+        position: relative;
+        z-index: 1;
+      }
+
+      #accueil p {
+        font-family: "Imprima", sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* ── PROJETS ── */
+      #projets {
+        padding: calc(var(--nav-h) + 20px) 16px 40px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        min-height: 100vh;
+      }
+
+      #projets::before {
+        display: none;
+      }
+
+      .projet-card {
+        background: var(--black);
+        border-radius: 16px;
+        overflow: hidden;
+        padding: 20px 20px 24px;
+      }
+
+      .projet-card h2 {
+        font-family: "Roboto", sans-serif;
+        font-size: 36px;
+        font-weight: 400;
+        margin-bottom: 16px;
+      }
+
+      .projet-screenshots {
+        display: flex;
+        gap: 10px;
+      }
+
+      /* Café: 2 images landscape → une seule en pleine largeur */
+      .projet-screenshots.landscape img {
+        border-radius: 8px;
+        object-fit: cover;
+        width: 100%;
+        max-height: 180px;
+      }
+
+      /* HydraConnect: images portrait → 2 côte à côte */
+      .projet-screenshots.portrait img {
+        border-radius: 8px;
+        object-fit: cover;
+        flex: 1;
+        width: 0;
+        max-height: 240px;
+      }
+
+      /* ── CONTACT ── */
+      #contact {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: calc(var(--nav-h) + 24px) 16px 40px;
+        min-height: 100vh;
+      }
+
+      .contact-outer {
+        background: var(--black);
+        border-radius: 16px;
+        padding: 14px;
+        width: 100%;
+        position: relative;
+        z-index: 1;
+      }
+
+      .contact-inner {
+        background: var(--bg);
+        border-radius: 12px;
+        padding: 24px 20px 28px;
+      }
+
+      .contact-inner h2 {
+        font-family: "Roboto", sans-serif;
+        font-size: 42px;
+        font-weight: 400;
+        margin-bottom: 20px;
+      }
+
+      .contact-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .contact-item {
+        background: var(--black);
+        border-radius: 14px;
+        padding: 16px 18px;
+        font-size: 16px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- NAV -->
+    <nav>
+      <a href="#accueil" class="nav-logo">portfolio</a>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+
+    <!-- DRAWER -->
+    <div class="nav-drawer" id="drawer">
+      <a href="#accueil" class="drawer-link">acceuil</a>
+      <a href="#projets" class="drawer-link">projets</a>
+      <a href="#contact" class="drawer-link">contact</a>
+    </div>
+
+    <!-- ACCUEIL -->
+    <section id="accueil">
+      <h1>Louis</h1>
+      <p>
+        designer/developpeur web et app passionné et autodidacte, je passe mon
+        temps libre à apprendre tout type de language informatique, jouer à des
+        jeux vidéos (minecraft, hollow knight et j'en passe) et faire de la
+        musique. j'ai eu plusieurs fois l'occasion de développer des programmes
+        en python, des sites web et autres, prêt à répondre à vos demandes.
+      </p>
+    </section>
+
+    <!-- PROJETS -->
+    <section id="projets">
+      <!-- Café : 1 image landscape -->
+      <div class="projet-card">
+        <h2>Café</h2>
+        <div class="projet-screenshots landscape">
+          <img
+            src="café1.png"
+            alt="Café screenshot"
+          />
+        </div>
+      </div>
+
+      <!-- HydraConnect : 2 images portrait côte à côte -->
+      <div class="projet-card">
+        <h2>HydraConnect</h2>
+        <div class="projet-screenshots portrait">
+          <img
+            src="hydraconnect1.png"
+            alt="HydraConnect screenshot 1"
+          />
+          <img
+            src="hydraconnect2.png"
+            alt="HydraConnect screenshot 2"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact">
+      <div class="contact-outer">
+        <div class="contact-inner">
+          <h2>Contact</h2>
+          <div class="contact-grid">
+            <div class="contact-item">Mail: louisdrey04@gmail.com</div>
+            <div class="contact-item">Discord: origame23137</div>
+            <div class="contact-item">Numero: +33 6 70 70 05 71</div>
+            <div class="contact-item">Insta: devsl23137</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      const btn = document.getElementById("hamburger");
+      const drawer = document.getElementById("drawer");
+
+      btn.addEventListener("click", () => {
+        btn.classList.toggle("open");
+        drawer.classList.toggle("open");
+      });
+
+      document.querySelectorAll(".drawer-link").forEach((link) => {
+        link.addEventListener("click", () => {
+          btn.classList.remove("open");
+          drawer.classList.remove("open");
+        });
+      });
+    </script>
+  </body>
+</html>
