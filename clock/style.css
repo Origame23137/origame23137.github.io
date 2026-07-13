@@ -444,6 +444,14 @@ body {
     opacity: 0.4;
 }
 
+/* Feedback discret pendant qu'un skip précédent/suivant est en cours de
+   confirmation côté serveur (l'action elle-même est déjà appliquée à
+   l'écran de façon optimiste, donc pas de spinner : juste une légère
+   atténuation). */
+.spotify-control-btn.is-pending .spotify-control {
+    opacity: 0.3;
+}
+
 .spotify-control {
     cursor: pointer;
     opacity: 0.5;

@@ -473,9 +473,18 @@ async function fetchCurrentlyPlaying() {
 // Wrapper commun pour les 3 endpoints de contrôle de l'API Spotify.
 // Ces endpoints nécessitent un compte Premium + un appareil actif
 // (l'app Spotify ouverte quelque part) ; sinon Spotify renvoie une 404.
-async function callSpotifyControl(endpoint, method) {
+// Le paramètre `onSuccess` est appelé immédiatement (avant la requête réseau)
+// pour une mise à jour optimiste de l'UI, et `onError` en cas d'échec pour
+// annuler ce changement.
+async function callSpotifyControl(endpoint, method, { onSuccess, onError } = {}) {
     const accessToken = await getValidAccessToken();
-    if (!accessToken) return;
+    if (!accessToken) {
+        onError?.();
+        return;
+    }
+
+    // Mise à jour optimiste : on ne bloque pas l'utilisateur sur le réseau.
+    onSuccess?.();
 
     try {
         const response = await fetch(`https://api.spotify.com/v1/me/player/${endpoint}`, {
@@ -485,43 +494,85 @@ async function callSpotifyControl(endpoint, method) {
 
         if (response.status === 404) {
             console.warn("Aucun appareil Spotify actif. Ouvre l'app Spotify quelque part et réessaie.");
+            onError?.();
             return;
         }
         if (response.status === 403) {
             console.warn("Action refusée : le contrôle de lecture nécessite un compte Spotify Premium.");
+            onError?.();
             return;
         }
         if (!response.ok && response.status !== 204) {
             throw new Error(`Erreur API Spotify (${endpoint}) : ${response.status}`);
         }
 
-        // On resynchronise l'affichage juste après l'action (léger délai
-        // pour laisser Spotify appliquer le changement côté serveur).
+        // Resynchronisation légère avec l'état réel de Spotify. Comme l'UI
+        // est déjà mise à jour de façon optimiste, ce délai n'est plus
+        // perçu par l'utilisateur — il sert juste à corriger d'éventuels
+        // écarts (ex: pochette/titre après un skip).
         setTimeout(fetchCurrentlyPlaying, 300);
     } catch (err) {
         console.error(`Erreur lors de l'action "${endpoint}" :`, err);
+        onError?.();
     }
+}
+
+// Empêche un double-clic d'envoyer deux requêtes concurrentes sur le même
+// bouton (l'API Spotify peut répondre dans le désordre sinon).
+const pendingControls = new Set();
+
+function withDebounce(key, fn) {
+    return async (...args) => {
+        if (pendingControls.has(key)) return;
+        pendingControls.add(key);
+        try {
+            await fn(...args);
+        } finally {
+            pendingControls.delete(key);
+        }
+    };
 }
 
 async function handlePlayPauseClick() {
-    if (localTrackIsPlaying) {
-        await callSpotifyControl("pause", "PUT");
-    } else {
-        await callSpotifyControl("play", "PUT");
-    }
+    const wasPlaying = localTrackIsPlaying;
+    const endpoint = wasPlaying ? "pause" : "play";
+    const method = "PUT";
+
+    await callSpotifyControl(endpoint, method, {
+        // Feedback instantané : on inverse l'icône et l'état local tout de
+        // suite, sans attendre la réponse réseau.
+        onSuccess: () => {
+            localTrackIsPlaying = !wasPlaying;
+            playPauseEl.textContent = localTrackIsPlaying ? "pause_circle" : "play_circle";
+        },
+        // En cas d'échec (pas de device actif, pas Premium...), on revient
+        // à l'état d'origine.
+        onError: () => {
+            localTrackIsPlaying = wasPlaying;
+            playPauseEl.textContent = wasPlaying ? "pause_circle" : "play_circle";
+        },
+    });
 }
 
 async function handlePreviousClick() {
-    await callSpotifyControl("previous", "POST");
+    await callSpotifyControl("previous", "POST", {
+        onSuccess: () => btnPrevious.classList.add("is-pending"),
+        onError: () => btnPrevious.classList.remove("is-pending"),
+    });
+    btnPrevious.classList.remove("is-pending");
 }
 
 async function handleNextClick() {
-    await callSpotifyControl("next", "POST");
+    await callSpotifyControl("next", "POST", {
+        onSuccess: () => btnNext.classList.add("is-pending"),
+        onError: () => btnNext.classList.remove("is-pending"),
+    });
+    btnNext.classList.remove("is-pending");
 }
 
-btnPlayPause.addEventListener("click", handlePlayPauseClick);
-btnPrevious.addEventListener("click", handlePreviousClick);
-btnNext.addEventListener("click", handleNextClick);
+btnPlayPause.addEventListener("click", withDebounce("play-pause", handlePlayPauseClick));
+btnPrevious.addEventListener("click", withDebounce("previous", handlePreviousClick));
+btnNext.addEventListener("click", withDebounce("next", handleNextClick));
 
 /* ---------- Initialisation ---------- */
 
