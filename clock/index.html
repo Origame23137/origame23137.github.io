@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Dashboard Horloge</title>
+
+<!-- Polices -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block" rel="stylesheet" />
+
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- Fond d'écran personnalisable + overlay de lisibilité -->
+<div id="wallpaper" class="wallpaper" aria-hidden="true"></div>
+<div class="wallpaper-overlay" aria-hidden="true"></div>
+
+<!-- Bouton d'accès aux réglages (coin haut-droit) -->
+<button id="settings-toggle" class="settings-toggle" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="settings-panel" title="Réglages">
+    <span class="material-symbols-outlined">settings</span>
+</button>
+
+<!-- Panneau de réglages -->
+<aside id="settings-panel" class="settings-panel" role="dialog" aria-label="Réglages du fond d'écran" aria-hidden="true">
+    <h2 class="settings-title">Fond d'écran</h2>
+
+    <label class="settings-file-label" for="wallpaper-input">
+        <span class="material-symbols-outlined">image</span>
+        Choisir une image
+    </label>
+    <input type="file" id="wallpaper-input" accept="image/*" class="sr-only" />
+
+    <button id="wallpaper-reset" type="button" class="settings-reset-btn">
+        <span class="material-symbols-outlined">restart_alt</span>
+        Rétablir le fond par défaut
+    </button>
+
+    <p id="wallpaper-status" class="settings-status" role="status" aria-live="polite"></p>
+
+    <hr class="settings-divider" />
+
+    <h2 class="settings-title">Météo</h2>
+    <label class="settings-hint" for="weather-city-input">
+        Ville affichée sous la date (ex. Colmar)
+    </label>
+    <div class="weather-input-row">
+        <input type="text" id="weather-city-input" class="weather-city-input" placeholder="Ville…" />
+        <button id="weather-city-save" type="button" class="weather-city-save-btn" title="Enregistrer" aria-label="Enregistrer la ville">
+            <span class="material-symbols-outlined">check</span>
+        </button>
+    </div>
+    <p id="weather-status" class="settings-status" role="status" aria-live="polite"></p>
+
+    <hr class="settings-divider" />
+
+    <h2 class="settings-title">Spotify</h2>
+    <p class="settings-hint">
+        Connecte ton compte Spotify pour afficher la musique en cours de lecture.
+    </p>
+    <button id="spotify-connect" type="button" class="settings-reset-btn">
+        <span class="material-symbols-outlined">link</span>
+        <span id="spotify-connect-label">Connecter Spotify</span>
+    </button>
+</aside>
+
+<!-- En-tête : date courante -->
+<header class="top-bar">
+    <div class="top-bar-info">
+        <h1 id="current-date" class="current-date">Chargement…</h1>
+        <p id="weather-line" class="weather-line">Configure ta ville dans les réglages</p>
+    </div>
+</header>
+
+<!-- Contenu principal : horloge -->
+<main class="clock-main">
+    <div class="clock-wrapper">
+        <div class="clock-glow" aria-hidden="true"></div>
+        <div class="clock-display" role="timer" aria-label="Heure actuelle">
+            <span id="hours">00</span>
+            <span class="clock-separator" aria-hidden="true">:</span>
+            <span id="minutes">00</span>
+            <span class="clock-separator" aria-hidden="true">:</span>
+            <span id="seconds" class="clock-seconds">00</span>
+        </div>
+    </div>
+</main>
+
+<!-- Pied de page : widget Spotify -->
+<footer class="bottom-bar">
+    <div id="spotify-card" class="spotify-card">
+        <div class="spotify-art-wrapper">
+            <img id="spotify-art" class="spotify-art" src="" alt="" />
+            <div class="spotify-badge">
+                <span id="spotify-badge-icon" class="material-symbols-outlined spotify-badge-icon">music_note</span>
+            </div>
+        </div>
+
+        <div class="spotify-info">
+            <span id="song-title" class="song-title">Aucune musique en cours</span>
+            <span id="artist-name" class="artist-name">Connecte Spotify dans les réglages</span>
+            <div class="progress-track">
+                <div id="playback-progress" class="progress-fill" style="width:0%"></div>
+            </div>
+        </div>
+
+        <div class="spotify-controls">
+            <button id="btn-previous" class="spotify-control-btn" type="button" title="Piste précédente" aria-label="Piste précédente">
+                <span class="material-symbols-outlined spotify-control">skip_previous</span>
+            </button>
+            <button id="btn-play-pause" class="spotify-control-btn" type="button" title="Lecture / Pause" aria-label="Lecture / Pause">
+                <span id="play-pause" class="material-symbols-outlined spotify-control spotify-control-main">play_circle</span>
+            </button>
+            <button id="btn-next" class="spotify-control-btn" type="button" title="Piste suivante" aria-label="Piste suivante">
+                <span class="material-symbols-outlined spotify-control">skip_next</span>
+            </button>
+        </div>
+    </div>
+</footer>
+
+<!-- Éléments atmosphériques d'arrière-plan -->
+<div class="ambient-blob ambient-blob-tl" aria-hidden="true"></div>
+<div class="ambient-blob ambient-blob-br" aria-hidden="true"></div>
+
+<script src="script.js"></script>
+</body>
+</html>

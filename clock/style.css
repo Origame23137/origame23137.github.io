@@ -1,0 +1,584 @@
+/* =========================================================
+   DASHBOARD HORLOGE — style.css
+   Palette et typographie conservées à l'identique du design
+   fourni (thème sombre, accent vert "tertiary").
+   ========================================================= */
+
+:root {
+    /* --- Palette (issue du design original) --- */
+    --color-primary: #c9c6c5;
+    --color-on-surface: #e3e2e2;
+    --color-on-surface-variant: #c4c7c7;
+    --color-background: #121414;
+    --color-surface-container: #1e2020;
+    --color-tertiary: #53e076;          /* accent vert (barre de progression) */
+    --color-on-tertiary: #003914;
+    --color-outline: #8e9192;
+    --color-outline-variant: #444748;
+    --color-error: #ffb4ab;
+
+    /* --- Typographie --- */
+    --font-main: "Geist", ui-sans-serif, system-ui, sans-serif;
+
+    /* --- Espacements --- */
+    --safe-margin: 40px;
+
+    color-scheme: dark;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* pas de scroll : layout plein écran */
+}
+
+body {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--color-background);
+    color: var(--color-on-surface);
+    font-family: var(--font-main);
+}
+
+/* =========================================================
+   FOND D'ÉCRAN PERSONNALISABLE
+   ========================================================= */
+
+.wallpaper {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background-color: var(--color-background);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: background-image 0.4s ease;
+}
+
+/* Overlay garantissant la lisibilité du texte quelle que soit l'image */
+.wallpaper-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.55) 0%,
+        rgba(0, 0, 0, 0.35) 40%,
+        rgba(0, 0, 0, 0.55) 100%
+    );
+    pointer-events: none;
+}
+
+/* =========================================================
+   BOUTON & PANNEAU DE RÉGLAGES
+   ========================================================= */
+
+.settings-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 60;
+    width: 44px;
+    height: 44px;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--color-on-surface-variant);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0.55;
+    backdrop-filter: blur(8px);
+    transition: opacity 0.25s ease, background 0.25s ease, transform 0.25s ease;
+}
+
+.settings-toggle:hover,
+.settings-toggle:focus-visible {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.1);
+    transform: rotate(45deg);
+}
+
+.settings-toggle:focus-visible {
+    outline: 2px solid var(--color-tertiary);
+    outline-offset: 2px;
+}
+
+.settings-panel {
+    position: fixed;
+    top: 72px;
+    right: 20px;
+    z-index: 59;
+    width: 280px;
+    padding: 20px;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(20, 21, 21, 0.85);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transform-origin: top right;
+    transform: scale(0.95) translateY(-8px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.settings-panel.is-open {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    pointer-events: auto;
+}
+
+.settings-title {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-on-surface);
+}
+
+.settings-hint {
+    margin: 0 0 4px 0;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--color-on-surface-variant);
+}
+
+.settings-file-label,
+.settings-reset-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-outline-variant);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--color-on-surface);
+    font-family: var(--font-main);
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.settings-file-label:hover,
+.settings-reset-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--color-tertiary);
+}
+
+.settings-file-label .material-symbols-outlined,
+.settings-reset-btn .material-symbols-outlined {
+    font-size: 18px;
+    color: var(--color-tertiary);
+}
+
+.settings-status {
+    min-height: 16px;
+    margin: 0;
+    font-size: 11px;
+    color: var(--color-tertiary);
+}
+
+.settings-divider {
+    border: none;
+    border-top: 1px solid var(--color-outline-variant);
+    margin: 6px 0;
+}
+
+.weather-input-row {
+    display: flex;
+    gap: 8px;
+}
+
+.weather-city-input {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 12px;
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-outline-variant);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--color-on-surface);
+    font-family: var(--font-main);
+    font-size: 13px;
+}
+
+.weather-city-input::placeholder {
+    color: var(--color-outline);
+}
+
+.weather-city-input:focus-visible {
+    outline: 2px solid var(--color-tertiary);
+    outline-offset: 2px;
+    border-color: var(--color-tertiary);
+}
+
+.weather-city-save-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-outline-variant);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--color-tertiary);
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.weather-city-save-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--color-tertiary);
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* =========================================================
+   EN-TÊTE — DATE
+   ========================================================= */
+
+.top-bar {
+    width: 100%;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 var(--safe-margin);
+    z-index: 10;
+}
+
+.top-bar-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.current-date {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-on-surface-variant);
+}
+
+.weather-line {
+    margin: 0;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-on-surface-variant);
+    opacity: 0.65;
+}
+
+/* =========================================================
+   HORLOGE CENTRALE
+   ========================================================= */
+
+.clock-main {
+    flex-grow: 1;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.clock-wrapper {
+    position: relative;
+}
+
+.clock-glow {
+    position: absolute;
+    inset: -80px;
+    background: rgba(201, 198, 197, 0.05);
+    filter: blur(120px);
+    border-radius: 9999px;
+    opacity: 0.5;
+}
+
+.clock-display {
+    position: relative;
+    display: flex;
+    align-items: baseline;
+    font-family: var(--font-main);
+    font-weight: 700;
+    letter-spacing: -0.05em;
+    color: var(--color-on-surface);
+    font-variant-numeric: tabular-nums; /* évite le tremblement des chiffres */
+    font-size: 80px;
+    line-height: 80px;
+}
+
+@media (min-width: 768px) {
+    .clock-display {
+        font-size: 160px;
+        line-height: 160px;
+    }
+}
+
+.clock-separator {
+    margin: 0 8px;
+    opacity: 0.5;
+}
+
+.clock-seconds {
+    color: var(--color-on-surface-variant);
+}
+
+/* =========================================================
+   PIED DE PAGE — WIDGET SPOTIFY (glassmorphism)
+   ========================================================= */
+
+.bottom-bar {
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0 var(--safe-margin) var(--safe-margin);
+    z-index: 10;
+}
+
+.spotify-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 320px;
+    max-width: 420px;
+    padding: 16px;
+    border-radius: 0.75rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    transition: background 0.3s ease, transform 0.15s ease;
+}
+
+.spotify-card:hover {
+    background: rgba(255, 255, 255, 0.09);
+}
+
+.spotify-card:active {
+    transform: scale(0.98);
+}
+
+.spotify-art-wrapper {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+}
+
+.spotify-art {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0.5rem;
+    background: var(--color-surface-container);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+.spotify-badge {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    background: #000;
+    border-radius: 9999px;
+    padding: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+}
+
+.spotify-badge-icon {
+    font-size: 16px;
+    color: #1db954;
+    transition: color 0.3s ease;
+}
+
+/* État "aucune lecture" : icône grisée */
+.spotify-card.is-idle .spotify-badge-icon {
+    color: var(--color-outline);
+}
+
+.spotify-info {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex: 1;
+    padding-right: 8px;
+}
+
+.song-title {
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--color-on-surface);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.artist-name {
+    font-size: 12px;
+    color: var(--color-on-surface-variant);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.progress-track {
+    margin-top: 8px;
+    width: 100%;
+    height: 2px;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--color-tertiary);
+    border-radius: 9999px;
+    transition: width 1s linear;
+}
+
+.spotify-controls {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--color-on-surface-variant);
+}
+
+/* Reset du style natif <button> : l'apparence visuelle reste identique
+   à avant, seule l'interactivité est ajoutée. */
+.spotify-control-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 9999px;
+    transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.spotify-control-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.spotify-control-btn:active {
+    transform: scale(0.92);
+}
+
+.spotify-control-btn:focus-visible {
+    outline: 2px solid var(--color-tertiary);
+    outline-offset: 2px;
+}
+
+.spotify-control-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+}
+
+/* Feedback discret pendant qu'un skip précédent/suivant est en cours de
+   confirmation côté serveur (l'action elle-même est déjà appliquée à
+   l'écran de façon optimiste, donc pas de spinner : juste une légère
+   atténuation). */
+.spotify-control-btn.is-pending .spotify-control {
+    opacity: 0.3;
+}
+
+.spotify-control {
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.15s ease;
+}
+
+.spotify-control-btn:hover .spotify-control {
+    opacity: 0.9;
+}
+
+.spotify-control-main {
+    color: var(--color-on-surface);
+    font-size: 30px;
+    opacity: 1;
+}
+
+/* =========================================================
+   ÉLÉMENTS ATMOSPHÉRIQUES
+   ========================================================= */
+
+.ambient-blob {
+    position: fixed;
+    border-radius: 9999px;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.ambient-blob-tl {
+    top: 40px;
+    left: 40px;
+    width: 128px;
+    height: 128px;
+    background: rgba(83, 224, 118, 0.1);
+    filter: blur(80px);
+}
+
+.ambient-blob-br {
+    bottom: 80px;
+    right: 40px;
+    width: 256px;
+    height: 256px;
+    background: rgba(201, 198, 197, 0.05);
+    filter: blur(100px);
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 480px) {
+    .spotify-card {
+        min-width: unset;
+        width: calc(100% - 0px);
+    }
+
+    .settings-panel {
+        width: calc(100vw - 40px);
+        right: 20px;
+    }
+}
+
+/* Respect des préférences de mouvement réduit */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}
