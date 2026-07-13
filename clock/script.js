@@ -184,7 +184,7 @@ loadWallpaperFromStorage();
    ========================================================= */
 
 // --- Constantes à personnaliser ---
-const SPOTIFY_CLIENT_ID = "REMPLACE_PAR_TON_CLIENT_ID"; // Étape 5 ci-dessus
+const SPOTIFY_CLIENT_ID = "b5a01af1ef494890b381088c34a0fb1b"; // Étape 5 ci-dessus
 const SPOTIFY_REDIRECT_URI = "https://origame23137.github.io/clock/index.html"; // doit être déclarée telle quelle (caractère pour caractère) dans le dashboard Spotify
 const SPOTIFY_SCOPES = [
     "user-read-currently-playing",
